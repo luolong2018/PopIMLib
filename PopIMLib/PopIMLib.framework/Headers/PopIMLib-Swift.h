@@ -501,10 +501,12 @@ SWIFT_CLASS("_TtC8PopIMLib16MqttSubscription")
 @end
 
 enum PopIMConnectState : NSInteger;
+enum PopIMServiceErrorCode : NSInteger;
 SWIFT_PROTOCOL("_TtP8PopIMLib20PopIMConnectProtocol_")
 @protocol PopIMConnectProtocol
 @optional
 - (void)onConnectionStatusChangeWithStatus:(enum PopIMConnectState)status;
+- (void)onConnectionErrorWithErrMsg:(NSString * _Nonnull)errMsg code:(enum PopIMServiceErrorCode)code;
 @end
 
 /// 连接状态
@@ -685,7 +687,9 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) PopIMLibSDK 
 /// 取得 Token 后，客户端可以按需保存 Token，供后续连接时使用。具体保存位置取决于应用程序客户端设计。如果 Token 未失效，就不必再向融云请求 Token。
 /// 建议应用程序在连接之前设置连接状态监听。连接状态
 - (void)connectWithToken:(NSString * _Nonnull)token userId:(NSString * _Nonnull)userId;
-- (void)disConnect;
+/// 退出服务
+/// @param isReceivePush 是否允许推送，默认为 true。如果设置为 false，将调用推送设备清除接口
+- (void)disConnectWithIsReceivePush:(BOOL)isReceivePush;
 - (void)addConnectionStatusChangeDelegate:(id <PopIMConnectProtocol> _Nonnull)delegate;
 - (void)removeConnectionStatusChangeDelegate:(id <PopIMConnectProtocol> _Nonnull)delegate;
 /// 获取连接状态
@@ -1288,18 +1292,14 @@ SWIFT_CLASS("_TtC8PopIMLib29PopIMSearchConversationResult")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
-/// 相关错误回调
+/// 服务错误码
 typedef SWIFT_ENUM(NSInteger, PopIMServiceErrorCode, open) {
-/// 未知
-  PopIMServiceErrorCodeUnknow = -1,
-/// 连接中
-  PopIMServiceErrorCodeInConnect = 0,
-/// 连接中
-  PopIMServiceErrorCodeSuccess = 1,
-/// 断开重连
-  PopIMServiceErrorCodeReconnect = 2,
-/// 链接失败
-  PopIMServiceErrorCodeFail = 3,
+/// 其它错误
+  PopIMServiceErrorCodeOther = -1,
+/// 非法token
+  PopIMServiceErrorCodeInvalidToken = 401,
+/// 服务端内部错误
+  PopIMServiceErrorCodeServerError = 500,
 };
 
 SWIFT_CLASS("_TtC8PopIMLib23PopIMTextMessageContent")
