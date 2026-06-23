@@ -1,4 +1,0 @@
-framework module PopIMLib {
-  header "PopIMLib-Swift.h"
-  requires objc
-}
